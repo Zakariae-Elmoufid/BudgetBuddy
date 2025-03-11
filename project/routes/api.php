@@ -28,7 +28,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 
-// Route::resource('/expenses', ExpenseController::class);
+Route::resource('/expenses', ExpenseController::class);
 // Route::resource('expenses', ExpenseController::class)->only(['store', 'index']);
 
-Route::post('/expenses', [ExpenseController::class, 'store'])->withoutMiddleware(['throttle']);
+// Route::post('/expenses', [ExpenseController::class, 'store'])->withoutMiddleware(['throttle']);

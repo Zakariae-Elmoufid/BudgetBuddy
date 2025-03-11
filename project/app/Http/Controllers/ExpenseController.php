@@ -19,7 +19,7 @@ class ExpenseController extends Controller
      */
     public function index()
     {
-        $expense = Expenses::all();
+        $expense = Expense::with('tags')->get();
         return  new ExpenseCollection($expense);
     }
 

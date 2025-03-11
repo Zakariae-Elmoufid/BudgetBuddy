@@ -17,7 +17,7 @@ class Expense extends Model
     ];
     
      public function tags(){
-        return $this->belongsToMany(Tag::class);
+        return $this->belongsToMany(Tag::class,'expense_tag');
      } 
 
      public function user()
