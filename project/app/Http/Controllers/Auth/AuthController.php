@@ -33,6 +33,8 @@ class AuthController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);
+
+
         return response()->json(['message' => 'User created successfully', 'user' => $user], 201);
     }
 
@@ -41,7 +43,8 @@ class AuthController extends Controller
     {
         $request->user()->currentAccessToken()->delete();
 
-        return response()->json(['message' => 'Logged out successfully'], 200);
+        return response()->json(['message' => 'Logged out successfully' ,
+               'token' => $token], 200);
     }
 
  
