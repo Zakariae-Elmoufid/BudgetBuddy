@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\ExpenseController;
 
 /*
 |--------------------------------------------------------------------------
@@ -25,3 +26,9 @@ Route::get('/test', function() {
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return response()->json($request->user());
 });
+
+
+// Route::resource('/expenses', ExpenseController::class);
+// Route::resource('expenses', ExpenseController::class)->only(['store', 'index']);
+
+Route::post('/expenses', [ExpenseController::class, 'store'])->withoutMiddleware(['throttle']);
