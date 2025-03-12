@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 { 
-    public function login (Request $request){
+    public function login(Request $request){
 
         $request->validate([
             'email' => 'required|email',
@@ -43,8 +43,7 @@ class AuthController extends Controller
     {
         $request->user()->currentAccessToken()->delete();
 
-        return response()->json(['message' => 'Logged out successfully' ,
-               'token' => $token], 200);
+        return response()->json(['message' => 'Logged out successfully'], 200);
     }
 
  

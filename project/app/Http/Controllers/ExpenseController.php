@@ -18,8 +18,11 @@ class ExpenseController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function index()
-    {
-        $expense = Expense::with('tags')->get();
+    {   
+        $user = auth()->user();
+        $this->authorize('create', Expense::class);
+
+        $expense = Expense::with('tags')->where('user_id', $user->id)->get();
         return  new ExpenseCollection($expense);
     }
 
@@ -38,6 +41,7 @@ class ExpenseController extends Controller
      */
     public function store(Request $request)
     {
+        $user = auth()->user();
         $validated = $request->validate([
             'title' => 'required|string|max:100',
             'description' => 'required|string|min:20',
@@ -46,13 +50,14 @@ class ExpenseController extends Controller
             'tags.*' => 'string', 
         ]);
         
+        $this->authorize('create', Expense::class);
         $expense = Expense::create([
             'title'  => $validated['title'],
             'description'  => $validated['description'],
             'price'  => $validated['price'],
-            'user_id' => $request->user_id,
+            'user_id' => $user->id,
         ]);
-
+        
         $tagData = collect($request->tags)->map(fn ($tag) => ['title' => $tag])->toArray();
 
         Tag::insert($tagData);
@@ -60,7 +65,8 @@ class ExpenseController extends Controller
         $tagIds = Tag::whereIn('title', $request->tags)->pluck('id');
         
         $expense->tags()->attach($tagIds);
-        
+
+ 
         return (new ExpenseResource($expense))->additional([
             'message' => 'Expense created successfully'
         ]);
@@ -76,6 +82,8 @@ class ExpenseController extends Controller
     {
         $expense = Expense::findOrFail($id);
         $expense->load('tags'); 
+        $this->authorize('view', $expense);
+
         return new ExpenseResource($expense);
     }
 
@@ -94,8 +102,10 @@ class ExpenseController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
-    {
-        
+    {       
+        $user = auth()->user();
+        $expense = Expense::findOrFail($id);
+        $this->authorize('update', $expense);
         $validated = $request->validate([
             'title' => 'required|string|max:100',
             'description' => 'required|string|min:20',
@@ -104,13 +114,12 @@ class ExpenseController extends Controller
             'tags.*' => 'string', 
         ]);
         
-        $expense = Expense::findOrFail($id);
         $expense->load('tags'); 
         $expense->update([
             'title'  => $validated['title'],
             'description'  => $validated['description'],
             'price'  => $validated['price'],
-            'user_id' => $request->user_id,
+            'user_id' => $user->id,
         ]);
         
 

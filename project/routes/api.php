@@ -18,7 +18,7 @@ use App\Http\Controllers\TagController;
 */
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
-Route::post('/logout',[AuthController::class],'logout')->middleware('auth:sanctum');;
+Route::post('/logout',[AuthController::class,'logout'])->middleware('auth:sanctum');
 
 Route::get('/test', function() {
     return response()->json(['message' => 'Hello, World!']);
@@ -28,14 +28,19 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return response()->json($request->user());
 });
 
-
+Route::middleware('auth:api')->group(function () {
 Route::resource('/expenses', ExpenseController::class);
+});
 
 
 Route::prefix('tags')->group(function () {
     Route::controller(TagController::class)->group(function () {
+        Route::get('/', 'index');
+        Route::post('/', 'store');
         Route::get('/{id}', 'show');
-        Route::post('', 'store');
+        Route::put('{id}', 'update');
+        Route::delete('{id}', 'destroy');
+
     });
 
 });

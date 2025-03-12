@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Tag;
-use App\Resource\TagCollection;
-use App\Resource\TagResource;
+use App\Http\Resources\TagCollection;
+use App\Http\Resources\TagResource;
 
 class TagController extends Controller
 {    
@@ -29,28 +29,28 @@ class TagController extends Controller
     }
 
     public function show($id){
-      $tas = Tag::findOrFail($id);
+      $tag = Tag::findOrFail($id);
       return new TagResource($tag);
     }
 
     public function update(Request $request, $id){
-        $tas = Tag::findOrFail($id);
-        $validated =  $Request->validate([
+        $tag = Tag::findOrFail($id);
+        $validated =  $request->validate([
             'title' => 'required|string|max:60',
             ]);
     
-            $tag = Tag::create([
+            $tag->update([
                 'title' => $validated['title'],
             ]);
 
-            return (new ExpenseResource($tag))->additional([
+            return (new TagResource($tag))->additional([
                 'message' => 'tag updated successfully'
             ]);
 
     }
 
     public function destroy($id){
-        $tas = Tag::findOrFail($id);
+        $tag = Tag::findOrFail($id);
         $tag->delete();
 
         return response()->json([
