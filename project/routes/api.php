@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\ExpenseController;
+use App\Http\Controllers\TagController;
 
 /*
 |--------------------------------------------------------------------------
@@ -29,6 +30,12 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 
 Route::resource('/expenses', ExpenseController::class);
-// Route::resource('expenses', ExpenseController::class)->only(['store', 'index']);
 
-// Route::post('/expenses', [ExpenseController::class, 'store'])->withoutMiddleware(['throttle']);
+
+Route::prefix('tags')->group(function () {
+    Route::controller(TagController::class)->group(function () {
+        Route::get('/{id}', 'show');
+        Route::post('', 'store');
+    });
+
+});

@@ -74,7 +74,9 @@ class ExpenseController extends Controller
      */
     public function show($id)
     {
-        //
+        $expense = Expense::findOrFail($id);
+        $expense->load('tags'); 
+        return new ExpenseResource($expense);
     }
 
     /**
@@ -83,11 +85,7 @@ class ExpenseController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
-    {
-        //
-    }
-
+    
     /**
      * Update the specified resource in storage.
      *
@@ -97,7 +95,38 @@ class ExpenseController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        
+        $validated = $request->validate([
+            'title' => 'required|string|max:100',
+            'description' => 'required|string|min:20',
+            'price' => 'required|numeric',
+            'tags' => 'array',
+            'tags.*' => 'string', 
+        ]);
+        
+        $expense = Expense::findOrFail($id);
+        $expense->load('tags'); 
+        $expense->update([
+            'title'  => $validated['title'],
+            'description'  => $validated['description'],
+            'price'  => $validated['price'],
+            'user_id' => $request->user_id,
+        ]);
+        
+
+        $expense->tags()->detach();
+        if (isset($validated['tags'])) {
+            $tagData = collect($validated['tags'])->map(fn ($tag) => ['title' => $tag])->toArray();
+            Tag::insert($tagData);
+    
+            $tagIds = Tag::whereIn('title', $validated['tags'])->pluck('id');
+    
+            $expense->tags()->attach($tagIds);
+        }
+
+
+        return new ExpenseResource($expense->load('tags'));
+
     }
 
     /**
@@ -108,6 +137,12 @@ class ExpenseController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $expense = Expense::findOrFail($id);
+        $expense->load('tags'); 
+        $expense->delete();
+
+        return response()->json([
+            'message' => 'expense deleted successfully'
+        ], 200);
     }
 }
