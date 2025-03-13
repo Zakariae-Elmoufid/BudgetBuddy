@@ -402,7 +402,7 @@ class ExpenseController extends Controller
      * @return \Illuminate\Http\Response
      */
 
-         /**
+    /**
      * @OA\Delete(
      *     path="/api/expenses/{id}",
      *     summary="Delete an expense",
