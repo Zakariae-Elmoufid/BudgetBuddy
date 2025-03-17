@@ -6,14 +6,10 @@ use Illuminate\Http\Request;
 use App\Models\Tag;
 use App\Http\Resources\TagCollection;
 use App\Http\Resources\TagResource;
+use Illuminate\Validation\ValidationException;
+use OpenApi\Attributes as OA;
 
-/**
- * @OA\Info(
- *     title="Tag Management API",
- *     version="1.0.0",
- *     description="API for managing  tags"
- * )
- */
+
 
 class TagController extends Controller
 {    
@@ -41,64 +37,86 @@ class TagController extends Controller
         return new TagCollection($tags);
     }
 
-         /**
-     * @OA\Post(
-     *     path="/api/tags",
-     *     summary="Create a new tag",
-     *     tags={"Expenses"},
-     *     security={{"bearerAuth":{}}},
-     *     @OA\RequestBody(
-     *         required=true,
-     *         @OA\JsonContent(
-     *             required={"title"},
-     *             @OA\Property(property="title", type="string", maxLength=100, example="food")   
-     *           
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=201,
-     *         description="Expense created successfully",
-     *         @OA\JsonContent(
-     *             type="object",
-     *             @OA\Property(
-     *                 property="data",
-     *                 type="object",
-     *                 @OA\Property(property="id", type="integer", example=1),
-     *                 @OA\Property(property="title", type="string", example="Office")
-     *              
-     *                 @OA\Property(property="created_at", type="string", format="date-time", example="2023-01-01T12:00:00Z"),
-     *                 @OA\Property(property="updated_at", type="string", format="date-time", example="2023-01-01T12:00:00Z")
-     *             ),
-     *             @OA\Property(property="message", type="string", example="Expense created successfully")
-     *         )
-     *     ),
-     *     @OA\Response(
-     *         response=401,
-     *         description="Unauthorized"
-     *     ),
-     *     @OA\Response(
-     *         response=403,
-     *         description="Forbidden"
-     *     ),
-     *     @OA\Response(
-     *         response=422,
-     *         description="Validation error",
-     *         @OA\JsonContent(
-     *             type="object",
-     *             @OA\Property(
-     *                 property="message",
-     *                 type="string",
-     *                 example="The given data was invalid."
-     *             ),
-     *             @OA\Property(
-     *                 property="errors",
-     *                 type="object",
-     *                 example={"title": {"The title field is required."}}
-     *             )
-     *         )
-     *     )
-     * )
-     */
+    /**
+ * @OA\Post(
+ *     path="/api/tags",
+ *     summary="Create a new tag",
+ *     tags={"Tags"},
+ *     security={{"bearerAuth":{}}},
+ *     @OA\RequestBody(
+ *         required=true,
+ *         @OA\JsonContent(
+ *             required={"title"},
+ *             @OA\Property(
+ *                 property="title", 
+ *                 type="string", 
+ *                 maxLength=100, 
+ *                 description="Name of the tag",
+ *                 example="food"
+ *             )
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=201,
+ *         description="Tag created successfully",
+ *         @OA\JsonContent(
+ *             type="object",
+ *             @OA\Property(
+ *                 property="data",
+ *                 type="object",
+ *                 @OA\Property(property="id", type="integer", example=1),
+ *                 @OA\Property(property="title", type="string", example="Food"),
+ *                 @OA\Property(property="created_at", type="string", format="date-time", example="2023-01-01T12:00:00Z"),
+ *                 @OA\Property(property="updated_at", type="string", format="date-time", example="2023-01-01T12:00:00Z")
+ *             ),
+ *             @OA\Property(
+ *                 property="message", 
+ *                 type="string", 
+ *                 example="Tag created successfully"
+ *             )
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=401,
+ *         description="Unauthorized",
+ *         @OA\JsonContent(
+ *             @OA\Property(
+ *                 property="message", 
+ *                 type="string", 
+ *                 example="Unauthenticated"
+ *             )
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=403,
+ *         description="Forbidden",
+ *         @OA\JsonContent(
+ *             @OA\Property(
+ *                 property="message", 
+ *                 type="string", 
+ *                 example="This action is unauthorized"
+ *             )
+ *         )
+ *     ),
+ *     @OA\Response(
+ *         response=422,
+ *         description="Validation error",
+ *         @OA\JsonContent(
+ *             type="object",
+ *             @OA\Property(
+ *                 property="message",
+ *                 type="string",
+ *                 example="The given data was invalid."
+ *             ),
+ *             @OA\Property(
+ *                 property="errors",
+ *                 type="object",
+ *                 example={"title": {"The title field is required."}}
+ *             )
+ *         )
+ *     )
+ * )
+ */
 
 
     public function store(Request $Request){

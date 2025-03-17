@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\TagController;
+use App\Http\Controllers\GroupController;
 
 /*
 |--------------------------------------------------------------------------
@@ -44,5 +45,10 @@ Route::prefix('tags')->group(function () {
 
     });
     });
+});
 
+Route::prefix('groups')->group(function () {
+     Route::middleware('auth:sanctum')->group(function () {
+        Route::post('/', [GroupController::class , 'store']);
+     });
 });
