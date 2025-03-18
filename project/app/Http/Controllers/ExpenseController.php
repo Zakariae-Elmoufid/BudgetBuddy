@@ -143,6 +143,7 @@ class ExpenseController extends Controller
     {
         $user = auth()->user();
        try {
+        
         $validated = $request->validate([
             'title' => 'required|string|max:100',
             'description' => 'required|string|min:20',

@@ -50,5 +50,6 @@ Route::prefix('tags')->group(function () {
 Route::prefix('groups')->group(function () {
      Route::middleware('auth:sanctum')->group(function () {
         Route::post('/', [GroupController::class , 'store']);
+        Route::get('/', [GroupController::class , 'index']);
      });
 });

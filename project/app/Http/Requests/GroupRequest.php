@@ -13,7 +13,7 @@ class GroupRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -27,7 +27,7 @@ class GroupRequest extends FormRequest
             'name' => 'required|string',
             'currency' => 'required',
             'users' => 'array',
-            'users.email' => 'email', 
+            'users.*' => 'email', 
         ];
     }
 }
