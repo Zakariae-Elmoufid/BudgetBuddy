@@ -47,7 +47,26 @@ class GroupController extends Controller
           return (new GroupResource($group))->additional([
             'message' => 'Group created successfully'
         ]);
-  
   }
+
+  public function show($id){
+    $group = Group::findOrFail($id);
+    $group->load('users'); 
+     return new GroupResource($group);
+  }
+
+  public function delete($id){
+    $group = Group::findOrFail($id);
+    if($group->solde ==  0){
+      $group->delete();
+      return response()->json([
+        'message' => 'Group deleted successfully'
+    ], 200);
+    }
+    return response()->json([
+      'message' => "don't delete group ,because has soled"
+  ], 200);
+    }
+    
   
 }

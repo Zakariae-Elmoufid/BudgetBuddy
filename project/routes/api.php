@@ -51,5 +51,8 @@ Route::prefix('groups')->group(function () {
      Route::middleware('auth:sanctum')->group(function () {
         Route::post('/', [GroupController::class , 'store']);
         Route::get('/', [GroupController::class , 'index']);
+        Route::get('/{id}' , [GroupController::class , 'show']);
+        Route::delete('/{id}' , [GroupController::class , 'delete']);
+
      });
 });
