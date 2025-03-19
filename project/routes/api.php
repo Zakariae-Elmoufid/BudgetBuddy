@@ -56,5 +56,6 @@ Route::prefix('groups')->group(function () {
         Route::delete('/{id}' , [GroupController::class , 'delete']);
         //group Expense
         Route::post('/{id}/exepenses' , [ExpenseGroupController::class , 'store']);
+        Route::get('/{id}/exepenses' , [ExpenseGroupController::class , 'show']);
      });
 });

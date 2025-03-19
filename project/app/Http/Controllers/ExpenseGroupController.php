@@ -6,6 +6,9 @@ use Illuminate\Http\Request;
 use App\Http\Requests\ExpenseGroupRequest;
 use App\Models\Expense;
 use App\Models\User;
+use App\Models\Group;
+use App\Http\Resources\ExpenseGroupResource;
+use App\Http\Resources\ExpenseGroupCollection;
 class ExpenseGroupController extends Controller
 {
     public function store(ExpenseGroupRequest $request,$id){
@@ -26,11 +29,13 @@ class ExpenseGroupController extends Controller
         
         $group->users()->attach($userIds);
         
-
-        return response()->json([
+        return (new ExpenseGroupResource($group))->additional([
             'message' => 'expense Group added  successfully'
-        ], 200); 
+        ]); 
+    }
 
-
+    public function show($id){
+        $group = Group::with(['expenses.users'])->find($id);
+        return new ExpenseGroupResource($group);
     }
 }
