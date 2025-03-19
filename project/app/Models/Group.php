@@ -18,4 +18,8 @@ class Group extends Model
     public function users(){
         return $this->belongsToMany(User::class,'group_user');
      } 
+
+    public function expenses() {
+        return $this->hasMany(Expense::class);
+    }
 }

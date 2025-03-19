@@ -6,6 +6,7 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\TagController;
 use App\Http\Controllers\GroupController;
+use App\Http\Controllers\ExpenseGroupController;
 
 /*
 |--------------------------------------------------------------------------
@@ -53,6 +54,7 @@ Route::prefix('groups')->group(function () {
         Route::get('/', [GroupController::class , 'index']);
         Route::get('/{id}' , [GroupController::class , 'show']);
         Route::delete('/{id}' , [GroupController::class , 'delete']);
-
+        //group Expense
+        Route::post('/{id}/exepenses' , [ExpenseGroupController::class , 'store']);
      });
 });

@@ -14,15 +14,31 @@ class Expense extends Model
         'description',
         'price',
         'user_id',
+        'group_id',
     ];
     
-     public function tags(){
+    public function tags(){
         return $this->belongsToMany(Tag::class,'expense_tag');
-     } 
+    }
+     
+     
 
      public function user()
-{
+    {
     return $this->belongsTo(User::class);
-}
+    }   
+
+    public function users(){
+        return $this->belongsToMany(user::class,'expense_user');
+     } 
+
+
+    public function group(){
+        return $this->belongsTo(Group::class);
+    }    
+
+    
+
+
 
 }
