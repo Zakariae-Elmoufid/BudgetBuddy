@@ -14,17 +14,6 @@ class ExpenseGroupResource extends JsonResource
      */
     public function toArray($request)
     {
-        return [
-            'group_id' => $this->id,
-            'group_name' => $this->name,
-            'total_expenses' => $this->expenses->sum('price'), 
-             'expenses' => $this->expenses->map(function ($expense) {
-                return [
-                    'title' => $expense->title,
-                    'users' => $expense->users->pluck('email') // Récupérer uniquement les emails des utilisateurs
-                ];
-             }),
-             'created_at' => $this->created_at->format('Y-m-d H:i:s'),
-        ];
+        return parent::toArray($request);
     }
 }

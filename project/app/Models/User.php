@@ -58,7 +58,9 @@ class User extends Authenticatable
     }
 
     public function expense(){
-        return $this->belongsToMany(Expense::class  ,'expense_user');
+        return $this->belongsToMany(Expense::class, 'expense_user')
+                    ->withPivot('user_amount')
+                    ->using(ExpenseUser::class);
     }
 
 

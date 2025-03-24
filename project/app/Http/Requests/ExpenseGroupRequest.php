@@ -26,9 +26,9 @@ class ExpenseGroupRequest extends FormRequest
         return [
             'title' => 'required|string|max:100',
             'description' => 'required|string|min:10',
-            'price' => 'required|numeric',
             'users' => 'array',
-            'users.email' => 'email',
+            'users.*.email' => 'email', // Chaque utilisateur dans le tableau "users" doit avoir une adresse email valide
+            'users.*.amount' => 'required|numeric', // Chaque utilisateur doit avoir un montant numérique
         ];
     }
 }

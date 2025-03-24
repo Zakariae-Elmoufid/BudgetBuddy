@@ -12,12 +12,12 @@ class Group extends Model
     protected $fillable = [
         'name',
         'currency',
-        'password',
+        'solde',
     ];
 
     public function users(){
         return $this->belongsToMany(User::class,'group_user');
-     } 
+    } 
 
     public function expenses() {
         return $this->hasMany(Expense::class);

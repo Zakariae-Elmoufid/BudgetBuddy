@@ -12,7 +12,7 @@ class Expense extends Model
     protected $fillable = [
         'title',
         'description',
-        'price',
+        'amount_total',
         'user_id',
         'group_id',
     ];
@@ -29,8 +29,10 @@ class Expense extends Model
     }   
 
     public function users(){
-        return $this->belongsToMany(user::class,'expense_user');
-     } 
+        return $this->belongsToMany(User::class, 'expense_user')
+                    ->withPivot('user_amount')
+                    ->using(ExpenseUser::class);
+    }
 
 
     public function group(){

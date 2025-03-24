@@ -26,6 +26,7 @@ class GroupRequest extends FormRequest
         return [
             'name' => 'required|string',
             'currency' => 'required',
+            'solde' => 'required|numeric',
             'users' => 'array',
             'users.*' => 'email', 
         ];

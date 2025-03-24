@@ -15,21 +15,34 @@ class ExpenseGroupController extends Controller
         $validated = $request->validated();
         $user = auth()->user();
 
-        $group = Expense::create([
+        $usersData = collect($request->users)->map(fn ($user) => [
+            'email' => $user['email'], 
+            'amount' => $user['amount'],
+        ])->toArray();
+
+        $userAmounts = collect($usersData)->pluck('amount')->toArray();
+         
+        $amount_total = 0;
+        foreach ($userAmounts as $amount) {
+            $amount_total += (float) $amount;
+        }
+
+        $expense = Expense::create([
             'group_id' => $id,
             'title' => $validated['title'],
             'description' => $validated['description'],
-            'price' => $validated['price'],
             'user_id' => $user->id,
+            'amount_total' =>$amount_total,
         ]);
+         $expense_id = $expense->id;
+            
+            $userIds = User::whereIn('email', collect($usersData)->pluck('email'))->pluck('id');
+            $amount ;
+            foreach ($userIds as $index => $userId) {
+            $expense->users()->attach($userId, ['user_amount' => $usersData[$index]['amount']]);
 
-
-        $users = collect($request->users)->map(fn ($user_email) => ['email' => $user_email])->toArray();
-        $userIds = User::whereIn('email', $request->users)->pluck('id');
-        
-        $group->users()->attach($userIds);
-        
-        return (new ExpenseGroupResource($group))->additional([
+            }
+        return (new ExpenseGroupResource($expense))->additional([
             'message' => 'expense Group added  successfully'
         ]); 
     }
@@ -38,4 +51,17 @@ class ExpenseGroupController extends Controller
         $group = Group::with(['expenses.users'])->find($id);
         return new ExpenseGroupResource($group);
     }
+
+
+    public function delete($group_id,$expense_id){
+        $group = Group::findOrFail($group_id);
+        $expense = Expense::where('id',$expense_id)->where('group_id',$group_id)->firstOrFail();
+        $expense->delete();
+        return response()->json([
+            'message' => 'expense deleted successfully'
+        ], 200);
+    }
+
+
+    
 }
