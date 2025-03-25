@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\GroupRequest;
+use Illuminate\Http\Request;
 use App\Models\Group;
 use App\Models\User;
 use App\Models\Expense;
+use App\Models\Payment;
 use App\Http\Resources\GroupResource;
 use App\Http\Resources\GroupCollection;
 use Illuminate\Validation\ValidationException ;
@@ -67,7 +69,7 @@ class GroupController extends Controller
     ], 200);
     }
     return response()->json([
-      'message' => "don't delete group ,because has soled"
+      'message' => "don't delete group ,because hasn't soled"
   ], 200);
   }
 
@@ -100,15 +102,50 @@ class GroupController extends Controller
               ->groupBy('expenses.id')
               ->value('total_due');
            
-          // Mise à jour du tableau des soldes
+        
           $balances[$user->id]['total_paid'] = $totalPaid;
           $balances[$user->id]['total_due'] = $totalDue ?? 0;
           $balances[$user->id]['balance'] = $totalPaid - ($totalDue ?? 0);
       }
-  
-      return response()->json($balances, 200);
+      return new GroupResource($balances);
+
   }
-  
+
+
+  public function settlePayment(Request $request, $id)
+{
+    $request->validate([
+        'payer_id' => 'required|exists:users,id',
+        'receiver_id' => 'required|exists:users,id|different:payer_id',
+        'amount' => 'required|numeric|min:0.01',
+    ]);
+
+    $group = Group::findOrFail($id);
+
+    $payer = $group->users()->find($request->payer_id);
+    $receiver = $group->users()->find($request->receiver_id);
+
+    if (!$payer) {
+        return response()->json(['error' => 'the payer soulde be to group'], 403);
+    }
+
+    if (!$receiver) {
+        return response()->json(['error' => 'the receiver soulde be to group'], 403);
+    }
+
+
+
+    // save settle
+    $payment = new Payment([
+        'group_id' => $id,
+        'payer_id' => $request->payer_id,
+        'receiver_id' => $request->receiver_id,
+        'amount' => $request->amount,
+    ]);
+    $payment->save();
+    return new GroupResource($payment);
+}
+
   
   
   

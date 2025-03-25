@@ -55,9 +55,12 @@ Route::prefix('groups')->group(function () {
         Route::get('/{id}' , [GroupController::class , 'show']);
         Route::delete('/{id}' , [GroupController::class , 'delete']);
         Route::get('{id}/balances',[GroupController::class , 'getBalances']);
+        Route::post('{id}/settle', [GroupController::class, 'settlePayment']);
+
         //group Expense
-        Route::post('/{id}/exepenses' , [ExpenseGroupController::class , 'store']);
+        Route::post('/{group}/exepenses' , [ExpenseGroupController::class , 'store']);
         Route::get('/{id}/exepenses' , [ExpenseGroupController::class , 'show']);
         Route::delete('/{group_id}/exepenses/{expense_id}' , [ExpenseGroupController::class , 'delete']);
+
      });
 });

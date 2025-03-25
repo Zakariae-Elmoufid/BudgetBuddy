@@ -15,6 +15,9 @@ class Expense extends Model
         'amount_total',
         'user_id',
         'group_id',
+        'date',
+        'split_type', 
+        'category',
     ];
     
     public function tags(){
@@ -28,16 +31,22 @@ class Expense extends Model
     return $this->belongsTo(User::class);
     }   
 
-    public function users(){
-        return $this->belongsToMany(User::class, 'expense_user')
-                    ->withPivot('user_amount')
-                    ->using(ExpenseUser::class);
+    public function contributions()
+    {
+        return $this->hasMany(Contribution::class);
     }
 
+
+ 
 
     public function group(){
         return $this->belongsTo(Group::class);
     }    
+
+    public function shares()
+    {
+        return $this->hasMany(ExpenseShare::class);
+    }
 
     
 
