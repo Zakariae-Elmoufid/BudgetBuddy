@@ -73,10 +73,10 @@ class ExpenseController extends Controller
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *             required={"title", "description", "price"},
+     *             required={"title", "description", "amount_total"},
      *             @OA\Property(property="title", type="string", maxLength=100, example="Office Supplies"),
      *             @OA\Property(property="description", type="string", minLength=20, example="Purchased office supplies for the team meeting"),
-     *             @OA\Property(property="price", type="number", format="float", example=150.75),
+     *             @OA\Property(property="amount_total", type="number", format="float", example=150.75),
      *             @OA\Property(
      *                 property="tags",
      *                 type="array",
@@ -95,7 +95,7 @@ class ExpenseController extends Controller
      *                 @OA\Property(property="id", type="integer", example=1),
      *                 @OA\Property(property="title", type="string", example="Office Supplies"),
      *                 @OA\Property(property="description", type="string", example="Purchased office supplies for the team meeting"),
-     *                 @OA\Property(property="price", type="number", format="float", example=150.75),
+     *                 @OA\Property(property="amount_total", type="number", format="float", example=150.75),
      *                 @OA\Property(
      *                     property="tags",
      *                     type="array",
@@ -143,10 +143,11 @@ class ExpenseController extends Controller
     {
         $user = auth()->user();
        try {
+        
         $validated = $request->validate([
             'title' => 'required|string|max:100',
             'description' => 'required|string|min:20',
-            'price' => 'required|numeric',
+            'amount_total' => 'required|numeric',
             'tags' => 'array',
             'tags.*' => 'string', 
         ]);
@@ -155,7 +156,7 @@ class ExpenseController extends Controller
         $expense = Expense::create([
             'title'  => $validated['title'],
             'description'  => $validated['description'],
-            'price'  => $validated['price'],
+            'amount_total'  => $validated['amount_total'],
             'user_id' => $user->id,
         ]);
         
@@ -214,7 +215,7 @@ class ExpenseController extends Controller
      *                 @OA\Property(property="id", type="integer", example=1),
      *                 @OA\Property(property="title", type="string", example="Office Supplies"),
      *                 @OA\Property(property="description", type="string", example="Purchased office supplies for the team meeting"),
-     *                 @OA\Property(property="price", type="number", format="float", example=150.75),
+     *                 @OA\Property(property="amount_total", type="number", format="float", example=150.75),
      *                 @OA\Property(
      *                     property="tags",
      *                     type="array",
@@ -283,10 +284,10 @@ class ExpenseController extends Controller
      *     @OA\RequestBody(
      *         required=true,
      *         @OA\JsonContent(
-     *             required={"title", "description", "price"},
+     *             required={"title", "description", "amount_total"},
      *             @OA\Property(property="title", type="string", maxLength=100, example="Updated Office Supplies"),
      *             @OA\Property(property="description", type="string", minLength=20, example="Updated description for office supplies"),
-     *             @OA\Property(property="price", type="number", format="float", example=200.50),
+     *             @OA\Property(property="amount_total", type="number", format="float", example=200.50),
      *             @OA\Property(
      *                 property="tags",
      *                 type="array",
@@ -305,7 +306,7 @@ class ExpenseController extends Controller
      *                 @OA\Property(property="id", type="integer", example=1),
      *                 @OA\Property(property="title", type="string", example="Updated Office Supplies"),
      *                 @OA\Property(property="description", type="string", example="Updated description for office supplies"),
-     *                 @OA\Property(property="price", type="number", format="float", example=200.50),
+     *                 @OA\Property(property="amount_total", type="number", format="float", example=200.50),
      *                 @OA\Property(
      *                     property="tags",
      *                     type="array",
@@ -360,7 +361,7 @@ class ExpenseController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:100',
             'description' => 'required|string|min:20',
-            'price' => 'required|numeric',
+            'amount_total' => 'required|numeric',
             'tags' => 'array',
             'tags.*' => 'string', 
         ]);
@@ -369,7 +370,7 @@ class ExpenseController extends Controller
         $expense->update([
             'title'  => $validated['title'],
             'description'  => $validated['description'],
-            'price'  => $validated['price'],
+            'amount_total'  => $validated['amount_total'],
             'user_id' => $user->id,
         ]);
         

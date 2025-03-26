@@ -12,17 +12,44 @@ class Expense extends Model
     protected $fillable = [
         'title',
         'description',
-        'price',
+        'amount_total',
         'user_id',
+        'group_id',
+        'date',
+        'split_type', 
+        'category',
     ];
     
-     public function tags(){
+    public function tags(){
         return $this->belongsToMany(Tag::class,'expense_tag');
-     } 
+    }
+     
+     
 
      public function user()
-{
+    {
     return $this->belongsTo(User::class);
-}
+    }   
+
+    public function contributions()
+    {
+        return $this->hasMany(Contribution::class);
+    }
+
+
+ 
+
+    public function group(){
+        return $this->belongsTo(Group::class);
+    }    
+
+    public function shares()
+    {
+        return $this->hasMany(ExpenseShare::class);
+    }
+
+    
+
+
 
 }

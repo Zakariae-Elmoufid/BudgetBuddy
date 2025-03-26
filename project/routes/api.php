@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\ExpenseController;
 use App\Http\Controllers\TagController;
+use App\Http\Controllers\GroupController;
+use App\Http\Controllers\ExpenseGroupController;
 
 /*
 |--------------------------------------------------------------------------
@@ -44,5 +46,22 @@ Route::prefix('tags')->group(function () {
 
     });
     });
+});
 
+Route::prefix('groups')->group(function () {
+     Route::middleware('auth:sanctum')->group(function () {
+        Route::post('/', [GroupController::class , 'store']);
+        Route::get('/', [GroupController::class , 'index']);
+        Route::get('/{id}' , [GroupController::class , 'show']);
+        Route::delete('/{id}' , [GroupController::class , 'delete']);
+        Route::get('{group}/balances',[GroupController::class , 'getBalances']);
+        Route::post('{id}/settle', [GroupController::class, 'settlePayment']);
+        Route::get('{group}/history ', [GroupController::class, 'history']);
+
+        //group Expense
+        Route::post('/{group}/exepenses' , [ExpenseGroupController::class , 'store']);
+        Route::get('/{group}/exepenses' , [ExpenseGroupController::class , 'show']);
+        Route::delete('/{group_id}/exepenses/{expense_id}' , [ExpenseGroupController::class , 'delete']);
+
+     });
 });
