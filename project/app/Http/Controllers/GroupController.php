@@ -12,6 +12,8 @@ use App\Http\Resources\GroupResource;
 use App\Http\Resources\GroupCollection;
 use Illuminate\Validation\ValidationException ;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+
 
 class GroupController extends Controller
 {
@@ -73,13 +75,14 @@ class GroupController extends Controller
   ], 200);
   }
 
-  public function getBalances($id)
-  {
-      $group = Group::with(['expenses.users'])->findOrFail($id);
-      
+  public function getBalances(Group $group)
+  {   
+      // Load the group with users and expenses for easier access
+      $group =  $group->load('users', 'expenses');
       $balances = [];
   
       foreach ($group->users as $user) {
+          // Initialize balance data for each user if it doesn't already exist
           if (!isset($balances[$user->id])) {
               $balances[$user->id] = [
                   'name' => $user->name,
@@ -89,27 +92,34 @@ class GroupController extends Controller
               ];
           }
   
+          // Calculate the total paid by the user
           $totalPaid = DB::table('expenses')
-          ->join('expense_user' , 'expense_user.expense_id', '=' , 'expenses.id')
-              ->where('expense_user.user_id', $user->id)
-              ->where('expenses.group_id',$id)
-              ->sum('user_amount');
-
+              ->join('expense_shares', 'expense_shares.expense_id', '=', 'expenses.id')
+              ->where('expense_shares.user_id', $user->id)
+              ->where('expenses.group_id', $group->id)
+              ->sum('expense_shares.amount');  // Ensure you sum the correct field ('amount')
+  
+          // Calculate the total due by the user
           $totalDue = DB::table('expenses')
-              ->join('expense_user', 'expenses.id', '=', 'expense_user.expense_id')
-              ->where('expense_user.user_id', $user->id)
-              ->selectRaw('SUM(expenses.amount_total / (SELECT COUNT(*) FROM expense_user WHERE expense_user.expense_id = expenses.id)) as total_due')
+              ->join('expense_shares', 'expenses.id', '=', 'expense_shares.expense_id')
+              ->where('expense_shares.user_id', $user->id)
+              ->where('expenses.group_id', $group->id)
+              ->selectRaw('SUM(expenses.amount_total / (SELECT COUNT(*) FROM expense_shares WHERE expense_shares.expense_id = expenses.id)) as total_due')
               ->groupBy('expenses.id')
-              ->value('total_due');
-           
-        
+              ->pluck('total_due')  // Get the actual result of the calculation
+              ->sum();  // Sum up the total due across all expenses for the user
+  
+          // Update the balance details for the user
           $balances[$user->id]['total_paid'] = $totalPaid;
           $balances[$user->id]['total_due'] = $totalDue ?? 0;
           $balances[$user->id]['balance'] = $totalPaid - ($totalDue ?? 0);
       }
+  
+      // Return the balances in a GroupResource format
       return new GroupResource($balances);
-
   }
+  
+  
 
 
   public function settlePayment(Request $request, $id)
@@ -140,10 +150,24 @@ class GroupController extends Controller
         'group_id' => $id,
         'payer_id' => $request->payer_id,
         'receiver_id' => $request->receiver_id,
+        'date' => now(),
         'amount' => $request->amount,
     ]);
     $payment->save();
     return new GroupResource($payment);
+}
+
+public function history(Group $group) {
+    if (!$group->users->contains(Auth::id())) {
+        return response()->json(['message' => 'Unauthorized'], 403);
+    }
+
+    $settlements = $group->payments()
+        ->with(['payer', 'receiver'])
+        ->orderBy('date', 'desc')
+        ->get();
+
+    return response()->json(['settlements' => $settlements]);
 }
 
   

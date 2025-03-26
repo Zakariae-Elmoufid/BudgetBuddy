@@ -40,6 +40,8 @@ class ExpenseGroupRequest extends FormRequest
             'category' => ['nullable', 'string', 'max:100'],
             
             
+            'shares.*.user_id' => ['required', 'integer', Rule::in($groupUserIds)],
+
             // Ajouter la validation `required` uniquement si `split_type` est `custom`
         'shares.*.percentage' => array_merge(
             ['numeric', 'min:0.01', 'max:100'],
